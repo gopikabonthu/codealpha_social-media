@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TAG - Social Media Platform
 
 TAG is a robust, full-stack social media application built with Django. It provides a complete environment for user interactions including posting content, commenting, liking, and following other users. The application is completely responsive and supports both Light and Dark themes via a user-friendly toggle.
@@ -60,3 +61,6 @@ TAG/
 - **Direct Messaging**: Build a real-time private messaging system between mutually followed users.
 - **Hashtags and Mentions**: Add parsing logic to index hashtags and "@" mentions for easier content discovery.
 - **Deployment**: Migrate from SQLite to PostgreSQL and deploy the application securely to a cloud provider like AWS or Heroku using Gunicorn and Nginx.
+=======
+# codealpha_social-media
+>>>>>>> 590686cbcfe2620e2d4e809b1bc28355acbddcce
