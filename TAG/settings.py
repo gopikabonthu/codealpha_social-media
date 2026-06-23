@@ -29,7 +29,6 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-git add TAG/settings.py
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
