@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+venv/
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+
+# Django specific
+staticfiles/
+*.sqlite3-journal
+
+# Agent Backups (from previous UI refactor)
+templates_backup/
+static/css/style_backup.css
+
+# Make sure these are NOT ignored (as requested for the internship)
+!db.sqlite3
+!media/

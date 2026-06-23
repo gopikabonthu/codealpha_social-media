@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - TAG{% endblock %}
+
+{% block content %}
+<div class="max-w-md">
+    
+    {% if user.is_authenticated %}
+    <div class="card mb-2">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="flex-row items-start gap-1">
+                <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}" class="avatar-sm">
+                <div class="w-full">
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                            {% for error in form.content.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="flex-row justify-between items-center mt-1">
+                        <label for="{{ form.image.id_for_label }}" style="cursor: pointer; color: var(--primary-color);">
+                            <i class="fas fa-image"></i> Add Image
+                            <span style="display: none;">{{ form.image }}</span>
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-pill">Post</button>
+                    </div>
+                    <!-- Image Preview Area -->
+                    <div id="image-preview-container" style="display: none; margin-top: 1rem;">
+                        <img id="image-preview" src="#" alt="Preview" class="post-image mb-0">
+                        <button type="button" onclick="clearImage()" class="post-action-btn mt-05" style="color: #ef4444;"><i class="fas fa-times"></i> Remove</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="hero">
+        <h1>Welcome to TAG</h1>
+        <p>Log in or sign up to see what's happening and start sharing!</p>
+    </div>
+    {% endif %}
+
+    <div class="feed">
+        {% if user.is_authenticated %}
+        <div class="flex-row justify-center gap-1 mb-15">
+            <a href="?filter=all" class="btn btn-pill {% if request.GET.filter != 'following' %}btn-primary{% else %}btn-outline{% endif %}">Global</a>
+            <a href="?filter=following" class="btn btn-pill {% if request.GET.filter == 'following' %}btn-primary{% else %}btn-outline{% endif %}">Following</a>
+        </div>
+        {% endif %}
+
+        {% for post in posts %}
+        <div class="card mb-15">
+            <div class="flex-row justify-between items-start mb-1">
+                <div class="flex-row items-center gap-1">
+                    <img src="{{ post.author.userprofile.profile_picture.url }}" alt="{{ post.author.username }}" class="avatar-sm">
+                    <div>
+                        <h4 class="mb-0"><a href="{% url 'user_profile' post.author.username %}" class="no-underline text-primary">{{ post.author.username }}</a></h4>
+                        <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+                {% if post.author == user %}
+                <div>
+                    <a href="{% url 'post_edit' post.id %}" class="text-muted" style="margin-right: 0.5rem;"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'post_delete' post.id %}" style="color: #ef4444;"><i class="fas fa-trash"></i></a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <p class="mb-1" style="white-space: pre-wrap;">{{ post.content }}</p>
+            
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+            {% endif %}
+            
+            <div class="flex-row items-center gap-15" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <form action="{% url 'post_like_toggle' post.id %}" method="POST" class="mb-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="post-action-btn {% if post.id in liked_post_ids %}liked{% endif %}">
+                        {% if post.id in liked_post_ids %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
+                        {% endif %}
+                        <span>{{ post.likes.count }} Likes</span>
+                    </button>
+                </form>
+                
+                <a href="{% url 'post_detail' post.id %}" class="post-action-btn">
+                    <i class="far fa-comment"></i> 
+                    <span>{{ post.comments.count }} Comments</span>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No posts yet. Be the first to post!</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const container = document.getElementById('image-preview-container');
+        const preview = document.getElementById('image-preview');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                container.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function clearImage() {
+        const input = document.getElementById('{{ form.image.id_for_label }}');
+        const container = document.getElementById('image-preview-container');
+        const preview = document.getElementById('image-preview');
+        
+        input.value = '';
+        preview.src = '#';
+        container.style.display = 'none';
+    }
+</script>
+{% endblock %}

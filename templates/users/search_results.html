@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - TAG{% endblock %}
+
+{% block content %}
+<div class="max-w-md mt-2">
+    <div class="flex-row items-center justify-between mb-2">
+        <h2 class="mb-0">Search Results for "{{ query }}"</h2>
+    </div>
+
+    <div class="users-list flex-col gap-1">
+        {% for u in users %}
+        <div class="card flex-row items-center justify-between">
+            <div class="flex-row items-center gap-1">
+                <img src="{{ u.userprofile.profile_picture.url }}" alt="{{ u.username }}" class="avatar-md">
+                <div>
+                    <a href="{% url 'user_profile' u.username %}" class="no-underline text-primary text-lg">{{ u.username }}</a>
+                    <p class="mb-0 text-muted text-sm">{{ u.userprofile.bio|truncatechars:50|default:"No bio" }}</p>
+                </div>
+            </div>
+            
+            <div class="flex-row items-center gap-05">
+                <a href="{% url 'user_profile' u.username %}" class="btn btn-outline btn-pill">View Profile</a>
+                {% if user.is_authenticated and user != u %}
+                <form action="{% url 'user_follow_toggle' u.username %}" method="POST" class="mb-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}?q={{ query }}">
+                    {% if u.id in following_ids %}
+                        <button type="submit" class="btn btn-outline btn-pill" style="border-color: #ef4444; color: #ef4444;">Unfollow</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary btn-pill">Follow</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No users found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

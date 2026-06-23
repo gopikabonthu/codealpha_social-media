@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - TAG{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 1.5rem;">Edit Profile</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--primary-color);">Account Information</h3>
+        {% for field in u_form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                        {% for error in field.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <h3 style="margin-bottom: 1rem; margin-top: 2rem; font-size: 1.1rem; color: var(--primary-color);">Profile Details</h3>
+        {% for field in p_form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                        {% for error in field.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{% url 'profile' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

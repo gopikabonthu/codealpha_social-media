@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post - TAG{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 1.5rem;">Edit Post</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.content }}
+            {% if form.content.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                    {% for error in form.content.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group" style="margin-top: 1rem;">
+            <label style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Update Image (Optional)</label>
+            {{ form.image }}
+            {% if form.image.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                    {% for error in form.image.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if post.image %}
+            <div style="margin-top: 1rem;">
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">Current Image:</p>
+                <img src="{{ post.image.url }}" alt="Current image" style="max-width: 200px; border-radius: 8px;">
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{% url 'home' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

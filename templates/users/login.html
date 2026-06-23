@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - TAG{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="auth-title">Welcome Back</h2>
+    <div class="card">
+        <form action="" method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                            {% for error in field.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.75rem;">Log In</button>
+        </form>
+    </div>
+    <div class="auth-footer">
+        Don't have an account? <a href="{% url 'register' %}">Sign up here</a>
+    </div>
+</div>
+
+<!-- Extra styles for login form inputs -->
+<style>
+    .auth-container input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .auth-container input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    }
+</style>
+{% endblock %}

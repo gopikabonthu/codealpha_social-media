@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero">
+    <h1>Connect with the World on TAG</h1>
+    <p>The modern social media platform designed for meaningful interactions. Join our community today and start sharing your moments.</p>
+    <div>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-pill mr-1">Get Started</a>
+        <a href="{% url 'login' %}" class="btn btn-outline btn-pill">Log In</a>
+    </div>
+</div>
+
+<div class="flex-row justify-center gap-2 mt-2" style="flex-wrap: wrap;">
+    <div class="card text-center" style="width: 300px;">
+        <i class="fas fa-bolt mb-1 text-primary" style="font-size: 2rem;"></i>
+        <h3>Fast & Responsive</h3>
+        <p class="text-muted mt-05">Experience lightning-fast interactions across all your devices.</p>
+    </div>
+    <div class="card text-center" style="width: 300px;">
+        <i class="fas fa-moon mb-1 text-primary" style="font-size: 2rem;"></i>
+        <h3>Beautiful Themes</h3>
+        <p class="text-muted mt-05">Designed with aesthetics in mind. Enjoy our sleek dark mode.</p>
+    </div>
+    <div class="card text-center" style="width: 300px;">
+        <i class="fas fa-users mb-1 text-primary" style="font-size: 2rem;"></i>
+        <h3>Connect Globally</h3>
+        <p class="text-muted mt-05">Find friends, share posts, and interact with the global community.</p>
+    </div>
+</div>
+{% endblock content %}

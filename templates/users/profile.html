@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile - TAG{% endblock %}
+
+{% block content %}
+<div class="card max-w-lg mb-2">
+    <div class="flex-row items-start gap-2 mb-2 profile-header-container">
+        <img src="{{ profile_user.userprofile.profile_picture.url }}" alt="{{ profile_user.username }}" class="profile-avatar">
+        <div class="w-full text-left">
+            <h2 class="mb-05">{{ profile_user.username }}</h2>
+            {% if request.user == profile_user or profile_user.userprofile.show_email %}
+                <p class="text-muted mb-05">{{ profile_user.email }}</p>
+            {% else %}
+                <p class="text-muted mb-05" style="font-style: italic;">Email hidden</p>
+            {% endif %}
+            <p class="text-muted mb-1 text-sm"><i class="far fa-calendar-alt"></i> Joined {{ profile_user.date_joined|date:"F Y" }}</p>
+            <p class="mb-15" style="font-size: 1.05rem;">{{ profile_user.userprofile.bio|default:"No bio available." }}</p>
+            <div class="profile-stats-grid">
+                <div class="profile-stat-item"><strong>{{ posts.count }}</strong> Posts</div>
+                <a href="{% url 'followers_list' profile_user.username %}" class="profile-stat-item"><strong>{{ profile_user.followers.count }}</strong> Followers</a>
+                <a href="{% url 'following_list' profile_user.username %}" class="profile-stat-item"><strong>{{ profile_user.following.count }}</strong> Following</a>
+            </div>
+        </div>
+    </div>
+    <div class="text-right profile-actions">
+        {% if user == profile_user %}
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-pill">Edit Profile</a>
+        {% elif user.is_authenticated %}
+            <form action="{% url 'user_follow_toggle' profile_user.username %}" method="POST" style="display: inline-block;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                {% if is_following %}
+                    <button type="submit" class="btn btn-outline btn-pill" style="border-color: #ef4444; color: #ef4444;">Unfollow</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-pill">Follow</button>
+                {% endif %}
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="max-w-md mt-2">
+    <h3 class="mb-15">Posts ({{ posts.count }})</h3>
+    {% for post in posts %}
+    <div class="card mb-15">
+        <div class="flex-row justify-between items-start mb-1">
+            <div class="flex-row items-center gap-1">
+                <img src="{{ post.author.userprofile.profile_picture.url }}" alt="{{ post.author.username }}" class="avatar-sm">
+                <div>
+                    <h4 class="mb-0"><a href="{% url 'user_profile' post.author.username %}" class="no-underline text-primary">{{ post.author.username }}</a></h4>
+                    <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                </div>
+            </div>
+            {% if post.author == user %}
+            <div>
+                <a href="{% url 'post_edit' post.id %}" class="text-muted" style="margin-right: 0.5rem;"><i class="fas fa-edit"></i></a>
+                <a href="{% url 'post_delete' post.id %}" style="color: #ef4444;"><i class="fas fa-trash"></i></a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <p class="mb-1" style="white-space: pre-wrap;">{{ post.content }}</p>
+        
+        {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+        {% endif %}
+        
+        <div class="flex-row items-center gap-15" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <form action="{% url 'post_like_toggle' post.id %}" method="POST" class="mb-0">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="post-action-btn {% if post.id in liked_post_ids %}liked{% endif %}">
+                    {% if post.id in liked_post_ids %}
+                        <i class="fas fa-heart"></i>
+                    {% else %}
+                        <i class="far fa-heart"></i>
+                    {% endif %}
+                    <span>{{ post.likes.count }} Likes</span>
+                </button>
+            </form>
+            
+            <a href="{% url 'post_detail' post.id %}" class="post-action-btn">
+                <i class="far fa-comment"></i> 
+                <span>{{ post.comments.count }} Comments</span>
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">No posts available.</p>
+    {% endfor %}
+</div>
+{% endblock content %}

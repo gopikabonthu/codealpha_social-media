@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Users Directory - TAG{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 2rem;">Discover Users</h2>
+
+    <div class="users-list" style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for u in users_list %}
+        <div class="card" style="padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <img src="{{ u.userprofile.profile_picture.url }}" alt="{{ u.username }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                <div>
+                    <a href="{% url 'user_profile' u.username %}" style="text-decoration: none; color: var(--text-color); font-weight: bold; font-size: 1.1rem;">{{ u.username }}</a>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">{{ u.userprofile.bio|truncatechars:50|default:"No bio" }}</p>
+                </div>
+            </div>
+            
+            {% if user.is_authenticated %}
+            <form action="{% url 'user_follow_toggle' u.username %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                {% if u.id in following_ids %}
+                    <button type="submit" class="btn btn-outline" style="padding: 0.4rem 1rem; border-color: #ef4444; color: #ef4444;">Unfollow</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary" style="padding: 0.4rem 1rem;">Follow</button>
+                {% endif %}
+            </form>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--text-secondary);">No other users found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

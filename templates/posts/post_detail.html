@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Post by {{ post.author.username }} - TAG{% endblock %}
+
+{% block content %}
+<div class="card max-w-md mb-2">
+    <div class="flex-row justify-between items-start mb-1">
+        <div class="flex-row items-center gap-1">
+            <img src="{{ post.author.userprofile.profile_picture.url }}" alt="{{ post.author.username }}" class="avatar-sm">
+            <div>
+                <h4 class="mb-0">{{ post.author.username }}</h4>
+                <small class="text-muted">{{ post.created_at|date:"F j, Y, g:i a" }}</small>
+            </div>
+        </div>
+        {% if post.author == user %}
+        <div>
+            <a href="{% url 'post_edit' post.id %}" class="text-muted" style="margin-right: 0.5rem;"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'post_delete' post.id %}" style="color: #ef4444;"><i class="fas fa-trash"></i></a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <p class="mb-1 text-lg" style="white-space: pre-wrap;">{{ post.content }}</p>
+    
+    {% if post.image %}
+    <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+    {% endif %}
+
+    <div class="flex-row items-center gap-15 mb-1" style="padding-top: 0.5rem;">
+        <form action="{% url 'post_like_toggle' post.id %}" method="POST" class="mb-0">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="post-action-btn {% if is_liked %}liked{% endif %}">
+                {% if is_liked %}
+                    <i class="fas fa-heart"></i>
+                {% else %}
+                    <i class="far fa-heart"></i>
+                {% endif %}
+                <span>{{ post.likes.count }} Likes</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="mt-15" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <h3 class="mb-1" style="font-size: 1.25rem;">Comments ({{ comments.count }})</h3>
+        
+        {% if user.is_authenticated %}
+        <form method="POST" class="mb-2">
+            {% csrf_token %}
+            <div class="flex-row items-start gap-1">
+                <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}" class="avatar-sm" style="width: 40px; height: 40px;">
+                <div class="w-full">
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem;">
+                            {% for error in form.content.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary btn-pill mt-05">Comment</button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+        <p class="text-muted mb-2"><a href="{% url 'login' %}" class="text-primary">Log in</a> to add a comment.</p>
+        {% endif %}
+
+        <div class="comments-list">
+            {% for comment in comments %}
+            <div class="flex-row gap-1 mb-15">
+                <img src="{{ comment.author.userprofile.profile_picture.url }}" alt="{{ comment.author.username }}" class="avatar-sm" style="width: 40px; height: 40px;">
+                <div class="w-full" style="background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px;">
+                    <div class="flex-row justify-between items-center mb-05">
+                        <div>
+                            <strong style="margin-right: 0.5rem;">{{ comment.author.username }}</strong>
+                            <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                        </div>
+                        {% if comment.author == user %}
+                        <div>
+                            <a href="{% url 'comment_edit' comment.id %}" class="text-muted" style="margin-right: 0.5rem; font-size: 0.85rem;"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'comment_delete' comment.id %}" style="color: #ef4444; font-size: 0.85rem;"><i class="fas fa-trash"></i></a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="mb-0 text-sm" style="white-space: pre-wrap;">{{ comment.content }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted mt-2">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-2 text-center">
+        <a href="{% url 'home' %}" class="btn btn-outline btn-pill w-full"><i class="fas fa-arrow-left"></i> Back to Feed</a>
+    </div>
+</div>
+{% endblock %}
